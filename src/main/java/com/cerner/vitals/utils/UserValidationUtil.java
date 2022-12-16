@@ -7,16 +7,17 @@ import com.cerner.vitals.model.User;
 
 import jakarta.ws.rs.core.Response;
 
-public class UserValidationUtil extends UserDaoImpl {
+public class UserValidationUtil {
 
 	User currentUser = new User();
+	UserDaoImpl userDao = new UserDaoImpl();
 	public String getUserRole(String user) {
-		return Optional.ofNullable(queryRole(user)).get().getRole();
+		return Optional.ofNullable(userDao.queryRole(user)).get().getRole();
 	}
 
 	public Response isCredententialsValid(String user, String pwd) {
 		String data=null;
-		if(queryUserAndPwd(user, pwd)) {
+		if(userDao.queryUserAndPwd(user, pwd)) {
 			data=JWTUtil.generateToken(user, user);
 			return Response.status(Response.Status.OK).entity(data).build();
 		}
