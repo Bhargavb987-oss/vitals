@@ -39,16 +39,8 @@ public class SecurityFilter implements ContainerRequestFilter{
 
 		if(!method.isAnnotationPresent(PermitAll.class))
 		{
-			// FOR DenyAll ----------------------------
-			if(method.isAnnotationPresent(DenyAll.class)){
-				req.abortWith(
-						Response
-						.status(Status.FORBIDDEN)
-						.entity("NOT ALLOWED")
-						.build());
-			}
 			//FOR ROLES ALLOWED ----------------------------------
-			else if(method.isAnnotationPresent(RolesAllowed.class)) {
+			if(method.isAnnotationPresent(RolesAllowed.class)) {
 				//IF NO AUTHORIZATION DETAILS --------------------------------
 				List<String> authorization=header.getRequestHeader("Authorization");
 				if(authorization==null || authorization.isEmpty()){

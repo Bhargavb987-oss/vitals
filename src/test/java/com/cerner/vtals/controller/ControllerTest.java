@@ -1,6 +1,7 @@
 package com.cerner.vtals.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -23,7 +24,7 @@ public class ControllerTest extends JerseyTest {
 
 	@Override
 	protected Application configure() {
-		return new ResourceConfig(Controller.class);
+		return new ResourceConfig(Controller.class,UserValidationUtil.class,UserDaoImpl.class);
 	}
 
 	@Mock
