@@ -63,8 +63,7 @@ public class Controller {
     @RolesAllowed({"admin","non-admin"})
     @Produces(MediaType.APPLICATION_JSON)
     public Response addPatientVitals(Vitals vitalDetails) throws Exception{
-    	Response rsp = service.addPatientVitals(vitalDetails);
-		return rsp;
+    	return service.addPatientVitals(vitalDetails);
     }
     
     @DELETE

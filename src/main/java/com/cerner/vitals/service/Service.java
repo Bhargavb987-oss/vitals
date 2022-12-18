@@ -59,7 +59,7 @@ public class Service extends VitalDAOImpl<Vitals> {
 		if(queryDeletePatientVitals(vitalId)) {
 			return Response.status(Response.Status.OK).entity("Deleted vital ID: "+vitalId).build();
 		}
-		return Response.status(Response.Status.BAD_REQUEST).entity("Error while deleting : "+vitalId).build();
+		return Response.status(Response.Status.BAD_REQUEST).entity("Unable to delete using vital ID: "+vitalId).build();
 	}
 
 	public Response updatePatientVitals(Vitals vitalDetails) {
@@ -89,14 +89,14 @@ public class Service extends VitalDAOImpl<Vitals> {
 	}
 	
 	Response validDataChecks(Vitals vitalDetails){
-		if(vitalDetails.getName()==null || vitalDetails.getName().matches("\\d+")) {
+		if(vitalDetails.getName()==null || vitalDetails.getName().matches("[0-9]+")) {
 			return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be empty or consist of special chars : "+vitalDetails.getName()).build();
 		}
-		if(vitalDetails.getPatient_id()==null || !vitalDetails.getPatient_id().matches("\\d+")) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("Patient ID cannot be empty or consist of special chars : "+vitalDetails.getName()).build();
+		if(vitalDetails.getPatient_id()==null || !vitalDetails.getPatient_id().matches("[0-9]+")) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Patient ID cannot be empty or consist of special chars : "+vitalDetails.getPatient_id()).build();
 		}
-		if(vitalDetails.getVital_id()==null || !vitalDetails.getVital_id().matches("\\d+")) {
-			return Response.status(Response.Status.BAD_REQUEST).entity("Vital ID cannot be empty or consist of special chars : "+vitalDetails.getName()).build();
+		if(vitalDetails.getVital_id()==null || !vitalDetails.getVital_id().matches("[0-9]+")) {
+			return Response.status(Response.Status.BAD_REQUEST).entity("Vital ID cannot be empty or consist of special chars : "+vitalDetails.getVital_id()).build();
 		}
 		if(!validateDate(vitalDetails.getFirst_updated()) || !validateDate(vitalDetails.getLast_updated())) {
 			return Response.status(400, "Invalid Date format given ").build();
