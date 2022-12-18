@@ -9,7 +9,6 @@ import com.cerner.vitals.utils.JWTUtil;
 import com.cerner.vitals.utils.UserValidationUtil;
 
 import jakarta.annotation.Priority;
-import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Priorities;

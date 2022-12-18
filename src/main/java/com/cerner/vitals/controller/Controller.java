@@ -2,17 +2,17 @@ package com.cerner.vitals.controller;
 
 import java.util.List;
 
-import com.cerner.vitals.model.Patient;
 import com.cerner.vitals.model.Vitals;
 import com.cerner.vitals.service.Service;
 import com.cerner.vitals.utils.UserValidationUtil;
 
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -30,7 +30,7 @@ public class Controller {
     @Path("/getByPatientId")
     @RolesAllowed({"admin","non-admin"})
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Vitals> findById(@QueryParam("id") int id) throws Exception{
+    public Response findById(@QueryParam("id") int id) throws Exception{
 		return service.findAllPatients(id);
     }
     
@@ -38,7 +38,7 @@ public class Controller {
     @Path("/getByDateRange")
     @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Vitals> findByDateRange(@QueryParam("from_date") String fromDate, @QueryParam("to_date") String toDate) throws Exception{
+    public Response findByDateRange(@QueryParam("from_date") String fromDate, @QueryParam("to_date") String toDate) throws Exception{
 		return service.findByDateRange(fromDate,toDate);
     }
     
@@ -46,7 +46,7 @@ public class Controller {
     @Path("/getByRecentlyStored")
     @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Vitals> findByRecentlyStored(@QueryParam("patient_id") int id) throws Exception{
+    public Response findByRecentlyStored(@QueryParam("patient_id") int id) throws Exception{
 		return service.findByRecentlyStored(id);
     }
     
@@ -54,17 +54,32 @@ public class Controller {
     @Path("/getByVitalId")
     @PermitAll
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Vitals> findByRecentlyStored(@QueryParam("patient_id") int patientId, @QueryParam("vital_id") List<Integer> vitalIds) throws Exception{
+    public Response findByRecentlyStored(@QueryParam("patient_id") int patientId, @QueryParam("vital_id") List<Integer> vitalIds) throws Exception{
 		return service.findByVitalId(patientId, vitalIds);
     }
     
     @POST
-    @Path("/addPatientVitals")
+    @Path("/addVitalId")
+    @RolesAllowed({"admin","non-admin"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response addPatientVitals(Vitals vitalDetails) throws Exception{
+    	Response rsp = service.addPatientVitals(vitalDetails);
+		return rsp;
+    }
+    
+    @DELETE
+    @Path("/deletePatientVitals")
+    @RolesAllowed("admin")
+    public Response deletePatientVitals(@QueryParam("vital_id") int vitalId) throws Exception{
+		return service.deletePatientVitals(vitalId);
+    }
+    
+    @PUT
+    @Path("/updateVitals")
     @RolesAllowed("admin")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response addPatientVitals(Patient details) throws Exception{
-		return service.addPatientVitals(details);
+    public Response updatePatientVitals(Vitals vitalDetails) throws Exception{
+		return service.updatePatientVitals(vitalDetails);
     }
     
     @Path("/genToken")

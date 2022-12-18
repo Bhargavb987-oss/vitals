@@ -1,5 +1,6 @@
 package com.cerner.vitals.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,7 @@ public class Vitals {
 	private int measurement;
 	private int updateCount;
 	private String units;
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "patient",referencedColumnName = "patient_id")
 	private Patient patient;
 	
