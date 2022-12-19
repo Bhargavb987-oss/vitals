@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.logging.Logger;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,9 +14,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JWTUtil {
 	private static String secret = "SAM-1997-MCA-SEC";
 	static byte[] encoded = Base64.encodeBase64(secret.getBytes());
-
+	static Logger logger = Logger.getLogger(JWTUtil.class.getName());
+	
 	public static String generateToken(String id, String subject) {
 
+		Logger logger = Logger.getLogger(JWTUtil.class.getName());
+		logger.info("Generating token for ID "+id);
 		String token = Jwts.builder().setId(id).setSubject(subject)
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(50)))
@@ -23,7 +27,6 @@ public class JWTUtil {
 				.compact();
 
 		return token;
-
 	}
 
 	public static Claims getClaims(String token) {
@@ -35,10 +38,12 @@ public class JWTUtil {
 	}
 
 	public static String getSubject(String token) {
+		logger.info("Getting claims subject token ");
 		return getClaims(token).getSubject();
 	}
 
 	public static String getId(String token) {
+		logger.info("Getting claims ID token ");
 		return getClaims(token).getId();
 	}
 

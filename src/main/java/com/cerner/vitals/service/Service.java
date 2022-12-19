@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.jboss.logging.Logger;
+
 import com.cerner.vitals.DAO.impl.VitalDAOImpl;
 import com.cerner.vitals.model.Vitals;
 
@@ -11,8 +13,11 @@ import jakarta.ws.rs.core.Response;
 
 public class Service extends VitalDAOImpl<Vitals> {
 
+	Logger logger = Logger.getLogger(Service.class.getName());
+	
 	public Response findAllPatients(int id) throws Exception {
 		List<Vitals> resultList = queryAllVitals(id);
+		logger.info("List size of all vitals for patient: "+resultList.size());
 		if(!resultList.isEmpty()) {
 			return Response.status(Response.Status.OK).entity("Vitals for Patient ID: "+resultList).build();
 		}
@@ -22,35 +27,44 @@ public class Service extends VitalDAOImpl<Vitals> {
 
 	public Response findByDateRange(String fromDate, String toDate) {
 		if(!validateDate(fromDate) || !validateDate(toDate)) {
+			logger.error("Invalid date format"+fromDate+"/"+toDate);
 			return Response.status(400, "Invalid Date format given ").build();
 		}
 		List<Vitals> resultList = queryByDateRange(fromDate,toDate);
 		if(!resultList.isEmpty()) {
+			logger.info("List size of all vitals for date range: "+resultList.size());
 			return Response.status(Response.Status.OK).entity("Data for vital date range: "+resultList).build();
 		}
+		logger.info("Empty list for Date range "+fromDate+" to "+toDate);
 		return Response.status(Response.Status.ACCEPTED).entity("No data present for the date range: "+fromDate+" to "+toDate).build();
 	}
 
 	public Response findByRecentlyStored(int id) {
 		List<Vitals> resultList = queryByRecentlyUpdated(id);
 		if(!resultList.isEmpty()) {
+			logger.info("List size of all vitals for recently stored: "+resultList.size());
 			return Response.status(Response.Status.OK).entity("Data for recently stored vitals: "+resultList).build();
 		}
+		logger.info("Empty list for ID: "+id);
 		return Response.status(Response.Status.ACCEPTED).entity("No data present for recently stored.").build();
 	}
 
 	public Response findByVitalId(int patientId, List<Integer> vitalIds) {
 		List<Vitals> resultList = queryByVitalId(patientId, vitalIds);
 		if(!resultList.isEmpty()) {
+			logger.info("List size of all vitals ID: "+resultList.size());
 			return Response.status(Response.Status.OK).entity("Data for vital ID/IDs: "+resultList).build();
 		}
+		logger.info("Empty list for ID: "+resultList.size());
 		return Response.status(Response.Status.ACCEPTED).entity("No data present for the ID/IDs: "+resultList).build();
 	}
 
 
 	public Response addPatientVitals(Vitals vitalDetails) {
+		logger.info("Adding Vital details");
 		Response validation = validDataChecks(vitalDetails);
 		if(validation!=null) {
+			logger.error("Failed during data validation "+validation.getEntity().toString());
 			return validation;
 		} return queryAddPatient(vitalDetails);
 	}
@@ -82,7 +96,7 @@ public class Service extends VitalDAOImpl<Vitals> {
 				return true;
 			}
 		} catch (ParseException e) {
-			System.out.println(e.getMessage());
+			logger.error("Failed during data validation of Vital Dates: "+date+" with message "+e.getMessage());
 			return false;
 		}
 		return false;
@@ -90,12 +104,15 @@ public class Service extends VitalDAOImpl<Vitals> {
 	
 	Response validDataChecks(Vitals vitalDetails){
 		if(vitalDetails.getName()==null || vitalDetails.getName().matches("[0-9]+")) {
+			logger.error("Failed during data validation of Vital Name: "+vitalDetails.getName());
 			return Response.status(Response.Status.BAD_REQUEST).entity("Name cannot be empty or consist of special chars : "+vitalDetails.getName()).build();
 		}
 		if(vitalDetails.getPatient_id()==null || !vitalDetails.getPatient_id().matches("[0-9]+")) {
+			logger.error("Failed during data validation of Patient ID: "+vitalDetails.getPatient_id());
 			return Response.status(Response.Status.BAD_REQUEST).entity("Patient ID cannot be empty or consist of special chars : "+vitalDetails.getPatient_id()).build();
 		}
 		if(vitalDetails.getVital_id()==null || !vitalDetails.getVital_id().matches("[0-9]+")) {
+			logger.error("Failed during data validation of Vital ID: "+vitalDetails.getVital_id());
 			return Response.status(Response.Status.BAD_REQUEST).entity("Vital ID cannot be empty or consist of special chars : "+vitalDetails.getVital_id()).build();
 		}
 		if(!validateDate(vitalDetails.getFirst_updated()) || !validateDate(vitalDetails.getLast_updated())) {

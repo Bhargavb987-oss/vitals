@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jboss.logging.Logger;
+
 import com.cerner.vitals.utils.JWTUtil;
 import com.cerner.vitals.utils.UserValidationUtil;
 
@@ -30,19 +32,25 @@ public class SecurityFilter implements ContainerRequestFilter{
 	@Context
 	private ResourceInfo recource;
 
+	Logger logger = Logger.getLogger(SecurityFilter.class.getName());
+	
 	@Override
 	public void filter(ContainerRequestContext req) throws IOException {
 
 		Method method=recource.getResourceMethod();
 		UserValidationUtil userUtil = new UserValidationUtil();
 
+		logger.info("Filtering roles");
 		if(!method.isAnnotationPresent(PermitAll.class))
 		{
+			logger.debug("Roles is not @PermitAll");
 			//FOR ROLES ALLOWED ----------------------------------
 			if(method.isAnnotationPresent(RolesAllowed.class)) {
+				logger.debug("Roles is present");
 				//IF NO AUTHORIZATION DETAILS --------------------------------
 				List<String> authorization=header.getRequestHeader("Authorization");
 				if(authorization==null || authorization.isEmpty()){
+					logger.warn("No Auth details present");
 					req.abortWith(
 							Response
 							.status(Status.BAD_REQUEST)
@@ -52,6 +60,7 @@ public class SecurityFilter implements ContainerRequestFilter{
 				// IF AUTHORIZATION DETAILS ARE THERE ------------------------------
 				else {
 					try {
+						logger.debug("Validating user");
 						String token=authorization.get(0);
 						String trimmedToken = token.replace("Bearer ","");
 						String user=JWTUtil.getSubject(trimmedToken);
@@ -61,6 +70,7 @@ public class SecurityFilter implements ContainerRequestFilter{
 
 						// USER ROLE MISMATCH ------------------------------
 						if(!methodRoles.contains(userRole))
+							logger.warn("User not present");
 							req.abortWith(
 									Response
 									.status(Status.FORBIDDEN)
@@ -68,6 +78,7 @@ public class SecurityFilter implements ContainerRequestFilter{
 									.build()
 									);
 					} catch (Exception e) {
+						logger.error("Error while Token generation with message: "+e.getMessage());
 						//IF TOKEN IS NOT VALID OR EXPIRED --------------------------
 						req.abortWith(
 								Response
