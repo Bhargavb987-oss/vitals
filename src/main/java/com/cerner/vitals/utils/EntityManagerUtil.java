@@ -1,6 +1,5 @@
 package com.cerner.vitals.utils;
 
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -12,40 +11,41 @@ import java.util.Properties;
 
 public class EntityManagerUtil {
 
-    private static EntityManagerUtil entityManagerUtil;
+	private static EntityManagerUtil entityManagerUtil;
 
-    private EntityManagerUtil(){
+	private EntityManagerUtil() {
 
-    }
+	}
 
-    public static EntityManagerUtil getInstance(){
-    	if(entityManagerUtil==null) {
-    		entityManagerUtil = new EntityManagerUtil();
-    	}
-        return entityManagerUtil;
-    }
+	public static EntityManagerUtil getInstance() {
+		if (entityManagerUtil == null) {
+			entityManagerUtil = new EntityManagerUtil();
+		}
+		return entityManagerUtil;
+	}
 
-    private EntityManagerFactory getFactory (){
-        File file = new File("/Users/bb106075/eclipse-workspace/vitals/src/main/resources/application.properties");
-        Properties properties = new Properties();
-        try {
-            FileReader fileReader = new FileReader(file);
-            properties.load(fileReader);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+	private EntityManagerFactory getFactory() {
+		File file = new File("/Users/bb106075/eclipse-workspace/vitals/src/main/resources/application.properties");
+		Properties properties = new Properties();
+		try {
+			FileReader fileReader = new FileReader(file);
+			properties.load(fileReader);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("unit1",properties);
+		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("unit1", properties);
 
-        return entityManagerFactory;
+		return entityManagerFactory;
 
-    }
-    public EntityManager getManager(){
-        EntityManagerFactory factory = entityManagerUtil.getFactory();
-        EntityManager entityManager = factory.createEntityManager();
-        return entityManager;
-    }
+	}
+
+	public EntityManager getManager() {
+		EntityManagerFactory factory = entityManagerUtil.getFactory();
+		EntityManager entityManager = factory.createEntityManager();
+		return entityManager;
+	}
 
 }

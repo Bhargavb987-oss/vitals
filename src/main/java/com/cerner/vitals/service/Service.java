@@ -28,7 +28,7 @@ public class Service extends VitalDAOImpl<Vitals> {
 	public Response findByDateRange(String fromDate, String toDate) {
 		if(!validateDate(fromDate) || !validateDate(toDate)) {
 			logger.error("Invalid date format"+fromDate+"/"+toDate);
-			return Response.status(400, "Invalid Date format given ").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Data for vital date range: ").build();
 		}
 		List<Vitals> resultList = queryByDateRange(fromDate,toDate);
 		if(!resultList.isEmpty()) {
@@ -64,7 +64,7 @@ public class Service extends VitalDAOImpl<Vitals> {
 		logger.info("Adding Vital details");
 		Response validation = validDataChecks(vitalDetails);
 		if(validation!=null) {
-			logger.error("Failed during data validation "+validation.getEntity().toString());
+			logger.error("Failed during data validation. ");
 			return validation;
 		} return queryAddPatient(vitalDetails);
 	}
@@ -87,7 +87,7 @@ public class Service extends VitalDAOImpl<Vitals> {
 	}
 
 	
-	private boolean validateDate(String date) {
+	boolean validateDate(String date) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		formatter.setLenient(false);
 		try {
